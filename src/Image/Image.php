@@ -497,7 +497,7 @@ class Image
             // unsupported type
             default :
 
-                throw new TinyImageException('Image source is an unsupported media type');
+                throw new Exception('Image source is an unsupported media type');
 
                 return false;
 
@@ -539,20 +539,20 @@ class Image
     {
         // if source file does not exist
         if (!file_exists($this->source_path)) {
-            throw new TinyImageException('Image source path: "'.$this->source_path.'" does not exist');
+            throw new Exception('Image source path: "'.$this->source_path.'" does not exist');
         }
         // if source file is not readable
         elseif (!is_readable($this->source_path)) {
-            throw new TinyImageException('Image source path: "'.$this->source_path.'" is not readable');
+            throw new Exception('Image source path: "'.$this->source_path.'" is not readable');
         }
         // if target file is the same as source file and source file is not writable
         elseif ($this->source_path == $this->target_path && !is_writable($this->source_path)) {
-            throw new TinyImageException('Image target path: "'.$this->source_path.'" must be writable');
+            throw new Exception('Image target path: "'.$this->source_path.'" must be writable');
         }
         // try to get source file width, height and type
         // check if it finds an unsupported file type
         elseif (!list($this->source_width, $this->source_height, $this->source_type) = @getimagesize($this->source_path)) {
-            throw new TinyImageException('Source image is an unsupported file type');
+            throw new Exception('Source image is an unsupported file type');
         }
     }
 }
