@@ -1,0 +1,10 @@
+{
+	"name": "jamesblanksby/image",
+	"type": "library",
+	"description": "A compact, single file PHP image manipulation library",
+	"autoload": {
+        "psr-4": {
+            "Image\\": "src/Carbon/"
+        }
+    }
+}
