@@ -28,7 +28,7 @@ $ composer require jamesblanksby/image
 	$img = new Image();
 ```
 
-Or without, download [Image.php](https://raw.githubusercontent.com/jamesblanksby/Image/master/src/Image/Image.php) and [ImageException.php](https://raw.githubusercontent.com/jamesblanksby/Image/master/src/Image/ImageException.php) from the repo and save it in your project directory.
+Or without, download [Image.php](https://raw.githubusercontent.com/jamesblanksby/Image/master/src/Image/Image.php) from the repo and save it in your project directory.
 
 ```php
 <?php
