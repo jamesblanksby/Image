@@ -260,6 +260,17 @@ class Image
         return $this;
     }
 
+    /**
+     * Crops a portion of the image. 
+     *
+     * @param int      $start_x      X coordinate to start cropping from
+     * @param int      $start_y      Y coordinate to start cropping from
+     * @param int      $end_x        X coordinate where to end the cropping
+     * @param int      $end_y        Y coordinate where to end the cropping
+     * @param resource $target_image Image resource to crop (Only used if method is called internally)
+     *
+     * @return object Returns the current instance of the class.
+     */
     public function crop($start_x, $start_y, $end_x, $end_y, $target_image = null)
     {
 
@@ -302,6 +313,11 @@ class Image
         return $this;
     }
 
+    /**
+     * Saves modified image.
+     *
+     * @param string $target_path (Optional) Target save path - if not set original image will be overwritten
+     */
     public function save($target_path = null)
     {
 
@@ -444,6 +460,11 @@ class Image
         return $image;
     }
 
+    /**
+     * Returns image resource from source path.
+     *
+     * @return bool
+     */
     private function _create_from_source()
     {
         // if image is already set
@@ -535,6 +556,9 @@ class Image
         return $rgb;
     }
 
+    /**
+     * Validates that supplied file exists, is readable, is writable is a support file type.
+     */
     private function _validate_file()
     {
         // if source file does not exist
