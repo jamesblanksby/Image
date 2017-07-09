@@ -8,36 +8,36 @@ class Image
      * File style permission level to be used when creating new images.
      *
      * Default is 0775
-     * 
+     *
      * @var int
      */
     public $chmod_value = 0755;
 
     /**
-     * If false, image with both height and width smaller than the specified values 
+     * If false, image with both height and width smaller than the specified values
      * will not be resized.
      *
      * Only available when used in conjunction with the resize() method.
      *
      * Default is true
-     * 
+     *
      * @var bool
      */
     public $enlarge_smaller_images = true;
 
     /**
-     * Compression level of saved JPG images.
-     * 
+     * Compression level of saved images.
+     *
      * A larger value indicated a better quality image but quality will drastically
      * increase file size.
      *
-     * Value may range from 0 - 100.
-     * 
-     * Default is 85.
-     * 
+     * Value may range from 0 - 1.
+     *
+     * Default is .85.
+     *
      * @var int
      */
-    public $jpg_quality = 85;
+    public $quality = .85;
 
     /**
      * Flag to specify if image should be sharpened after manipulation.
@@ -45,7 +45,7 @@ class Image
      * Should only be used when creating smaller images such as thumbnails.
      *
      * Default is false
-     * 
+     *
      * @var bool
      */
     public $sharpen_images = false;
@@ -54,21 +54,21 @@ class Image
      * Flag to specify whether or not an image's aspect ratio shout be kept.
      *
      * Default is true.
-     * 
+     *
      * @var bool
      */
     public $preserve_ratio = true;
 
     /**
      * Path to image file.
-     * 
+     *
      * @var string
      */
     public $source_path;
 
     /**
      * Path, including file name, to source image's intended save directory.
-     * 
+     *
      * @var string
      */
     public $target_path;
@@ -82,10 +82,10 @@ class Image
 
     /**
      * Sets the source path and validates the file.
-     * 
+     *
      * @param string $path Source image path.
      */
-    public function make($path)
+    public function __construct($path)
     {
         $this->source_path = $path;
 
@@ -94,21 +94,15 @@ class Image
 
     /**
      * Resizes an image and stores the resultant image as the master resource.
-     * 
+     *
      * @param int $width  Width to resize image to.
      * @param int $height Height to resize image to.
-     * 
+     *
      * @return object Returns the current instance of the class.
      */
     public function resize($width = 0, $height = 0)
     {
         if ($this->_create_from_source()) {
-
-            // if either height or width are to be resized automatically
-            // set a flag to override $preserve_ratio, even if it is set to false
-            if ($width == 0 || $height == 0) {
-                $override_preserve_ratio = true;
-            }
 
             // if aspect ratio must be preserved
             if ($this->preserve_ratio || isset($override_preserve_ratio)) {
@@ -191,7 +185,7 @@ class Image
             ) {
                 if (
 
-                    // aspect ratio must be preserved AND 
+                    // aspect ratio must be preserved AND
                     ($this->preserve_ratio || isset($override_preserve_ratio)) &&
 
                     // both width & height values are provided
@@ -261,7 +255,7 @@ class Image
     }
 
     /**
-     * Crops a portion of the image. 
+     * Crops a portion of the image.
      *
      * @param int      $start_x      X coordinate to start cropping from
      * @param int      $start_y      Y coordinate to start cropping from
@@ -337,7 +331,7 @@ class Image
         switch ($this->target_type) {
 
             // is GIF
-            case 'gif' :
+            case 'gif':
 
                 // save as gif
                 imagegif($this->target_image, $this->target_path);
@@ -345,21 +339,21 @@ class Image
                 break;
 
             // is JPG
-            case 'jpg' :
-            case 'jpeg' :
+            case 'jpg':
+            case 'jpeg':
 
                 // save as jpg
-                imagejpeg($this->target_image, $this->target_path, $this->jpg_quality);
+                imagejpeg($this->target_image, $this->target_path, ($this->quality * 100));
 
                 break;
 
-            case 'png' :
+            case 'png':
 
                 // save full alpha channel
                 imagesavealpha($this->target_image, true);
 
                 // save as png
-                imagepng($this->target_image, $this->target_path);
+                imagepng($this->target_image, $this->target_path, ($this->quality * 10));
 
                 break;
         }
@@ -370,11 +364,11 @@ class Image
     /**
      * Creates an empty image with a specified width, height and an optional
      * background color.
-     *  
+     *
      * @param int    $width            Width of new image.
      * @param int    $height           Height of new image.
      * @param string $background_color (Optional) Six digit hexadecimal color value.
-     * 
+     *
      * @return resource True color image identifier.
      */
     private function _prepare_image($width, $height, $background_color = '#FFFFFF')
@@ -383,13 +377,13 @@ class Image
         $target_image = imagecreatetruecolor($width, $height);
 
         // is transparent PNG
-        if ($target_type == 'png' && $background_color == -1) {
+        if ($this->target_type == 'png' && $background_color == -1) {
 
             // disable blending - <http://php.net/function.imagealphablending>
             imagealphablending($target_image, false);
 
             // allocate a transparent color
-            $transparent_color = imagecolorallocatealpha($this->target_image, 0, 0, 0, 127);
+            $transparent_color = imagecolorallocatealpha($target_image, 0, 0, 0, 127);
 
             // fill image with the transparent color
             imagefill($target_image, 0, 0, $transparent_color);
@@ -398,7 +392,7 @@ class Image
             imagesavealpha($target_image, true);
         }
         // is transparent GIF
-        elseif ($target_type == 'gif' && $background_color == -1 && $this->source_transparent_color_index >= 0) {
+        elseif ($this->target_type == 'gif' && $background_color == -1 && $this->source_transparent_color_index >= 0) {
 
             // allocate the source image's transparent color also to the new image resource
             $transparent_color = imagecolorallocate(
@@ -414,7 +408,7 @@ class Image
             // every pixel with the same RGB as the transparent color will be transparent
             imagecolortransparent($target_image, $transparent_color);
         }
-        // for all other image types 
+        // for all other image types
         else {
             // set background color to white if it does not exist
             if ($background_color == -1) {
@@ -477,12 +471,12 @@ class Image
             return true;
         }
 
-        $this->target_type = $this->get_extension($this->source_path);
+        $this->target_type = $this->_get_extension($this->target_path);
 
         switch ($this->source_type) {
 
             // is GIF
-            case IMAGETYPE_GIF :
+            case IMAGETYPE_GIF:
 
                 // create a new image from source path
                 $image = imagecreatefromgif($this->source_path);
@@ -497,7 +491,7 @@ class Image
                 break;
 
             // is JPG
-            case IMAGETYPE_JPEG :
+            case IMAGETYPE_JPEG:
 
                 // create a new image from source path
                 $image = imagecreatefromjpeg($this->source_path);
@@ -505,7 +499,7 @@ class Image
                 break;
 
             // is PNG
-            case IMAGETYPE_PNG :
+            case IMAGETYPE_PNG:
 
                 // create a new image from source path
                 $image = imagecreatefrompng($this->source_path);
@@ -516,9 +510,9 @@ class Image
                 break;
 
             // unsupported type
-            default :
+            default:
 
-                throw new Exception('Image source is an unsupported media type');
+                throw new \Exception('Image source is an unsupported media type');
 
                 return false;
 
@@ -531,16 +525,32 @@ class Image
     }
 
     /**
-     * Converts a hexadecimal representation of a color (i.e. #123456 or #AAA) to a 
+     * Gets path file extension.
+     * 
+     * @param  string $path File path
+     * 
+     * @return string       Lowercase represntation of file extension
+     */
+    public function _get_extension($path)
+    {
+        $ext = pathinfo($this->source_path, PATHINFO_EXTENSION);
+
+        $ext = strtolower($ext);
+
+        return $ext;
+    }
+
+    /**
+     * Converts a hexadecimal representation of a color (i.e. #123456 or #AAA) to a
      * RGB representation.
-     * 
+     *
      * @param string $color Hexadecimal representation of a color
-     * 
+     *
      * @return array Associative array with the values of (R)ed, (G)reen & (B)lue
      */
     private function _hex2rgb($color)
     {
-        $hex = str_replace('#', '', $hex);
+        $hex = str_replace('#', '', $color);
 
         if (strlen($hex) == 3) {
             $r = hexdec(substr($hex, 0, 1).substr($hex, 0, 1));
@@ -551,7 +561,8 @@ class Image
             $g = hexdec(substr($hex, 2, 2));
             $b = hexdec(substr($hex, 4, 2));
         }
-        $rgb = [$r, $g, $b];
+
+        $rgb = ['r' => $r, 'g' => $g, 'b' => $b];
 
         return $rgb;
     }
@@ -563,20 +574,20 @@ class Image
     {
         // if source file does not exist
         if (!file_exists($this->source_path)) {
-            throw new Exception('Image source path: "'.$this->source_path.'" does not exist');
+            throw new \Exception('Image source path: "'.$this->source_path.'" does not exist');
         }
         // if source file is not readable
         elseif (!is_readable($this->source_path)) {
-            throw new Exception('Image source path: "'.$this->source_path.'" is not readable');
+            throw new \Exception('Image source path: "'.$this->source_path.'" is not readable');
         }
         // if target file is the same as source file and source file is not writable
         elseif ($this->source_path == $this->target_path && !is_writable($this->source_path)) {
-            throw new Exception('Image target path: "'.$this->source_path.'" must be writable');
+            throw new \Exception('Image target path: "'.$this->source_path.'" must be writable');
         }
         // try to get source file width, height and type
         // check if it finds an unsupported file type
         elseif (!list($this->source_width, $this->source_height, $this->source_type) = @getimagesize($this->source_path)) {
-            throw new Exception('Source image is an unsupported file type');
+            throw new \Exception('Source image is an unsupported file type');
         }
     }
 }
