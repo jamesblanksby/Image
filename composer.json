@@ -4,7 +4,10 @@
 	"description": "A compact, single file PHP image manipulation library",
 	"autoload": {
         "psr-4": {
-            "Image\\": "src/Carbon/"
+            "Image\\": "src/Image/"
         }
-    }
+    },
+	"require-dev": {
+		"phpunit/phpunit": "^5.7"
+	}
 }

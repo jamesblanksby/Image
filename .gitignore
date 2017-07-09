@@ -1,2 +1,3 @@
-tests
+tests/output/
+composer.lock
 vendor
