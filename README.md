@@ -19,11 +19,8 @@ $ composer require jamesblanksby/image
 // load the image class
 require_once __DIR__ '/vendor/autoload.php';
 
-// import it's namespace
+// import namespace
 use Image\Image;
-
-// create new instance of the class
-$img = new Image();
 ```
 
 Or without, download [Image.php](https://raw.githubusercontent.com/jamesblanksby/Image/master/src/Image/Image.php) from the repo and save it in your project directory.
@@ -33,11 +30,8 @@ Or without, download [Image.php](https://raw.githubusercontent.com/jamesblanksby
 
 require_once 'path/to/Image.php';
 
-// import it's namespace
+// import namespace
 use Image\Image;
-
-// create new instance of the class
-$img = new Image();
 ```
 
 ## Simple example
@@ -45,7 +39,7 @@ $img = new Image();
 <?php
 
 // start by specifying a source image
-$img->make('lib/demo.jpg');
+$img = new Image('lib/demo.jpg');
 
 // resize image to 1000 wide
 // the height value has been omitted and `preserve_ratio` is set to true by default so the height will be calculated using the image's aspect ratio
@@ -60,14 +54,6 @@ $img->save('lib/final.jpg');
 ```
 
 ## API
-
-> `Image::make(string $source_path)`
-
-Sets the source path and validates the file.
-
-- `$source_path`: Source image path
-
-<hr>
 
 > `Image::resize(int $width, int $height)`
 
